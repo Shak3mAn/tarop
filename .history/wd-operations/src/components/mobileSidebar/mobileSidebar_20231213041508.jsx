@@ -151,7 +151,7 @@ const MobileSidebar = () => {
       </SheetPrimitive.Trigger>
       <SheetContent side="left" className="px-0">
         {/* <Sidebar /> */}
-        <div className="space-y-4 py-4 flex flex-col h-full bg-card text-primary overflow-hidden">
+        <div className="space-y-4 py-4 flex flex-col h-screen bg-card text-primary overflow-hidden">
           <div className="px-3 pb-1 pt-2 flex-1 flex flex-col justify-between">
             <div>
               {/* Logo */}
@@ -171,7 +171,7 @@ const MobileSidebar = () => {
               </div>
               <SideSeparator className={"bg-primary"} />
               <div className="space-y-3">
-                {person?.role === "Admin" && (
+                {person.role === "Admin" && (
                   <>
                     {adminRoutes.map((route) => (
                       <Link
@@ -197,7 +197,7 @@ const MobileSidebar = () => {
                     ))}
                   </>
                 )}
-                {person?.role === "Driver" && (
+                {person.role === "Driver" && (
                   <>
                     {driverRoutes.map((route) => (
                       <Link
@@ -223,8 +223,8 @@ const MobileSidebar = () => {
                     ))}
                   </>
                 )}
-                {(person?.role === "Operation Coordinator" ||
-                  person?.role === "Support Coordinator") && (
+                {(person.role === "Operation Coordinator" ||
+                  person.role === "Support Coordinator") && (
                   <>
                     {generalRoutes.map((route) => (
                       <Link
