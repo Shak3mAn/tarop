@@ -42,6 +42,7 @@ export const useTeamsMapMeta = create((set) => ({
         teamsMeta: teamsMetaArray,
         teams: teamsArray,
       });
+      console.log("Response & TeamsMeta:", response.data.teamMapMetas, teams)
     } catch (error) {
       // console.error("Error fetching getTeamMetas:", error);
       // toast.error("Something went wrong whilst fetching teams map meta");
@@ -186,6 +187,7 @@ export const useDriversMapMeta = create((set) => ({
         driversMeta: driversMetaArray,
         drivers: driversArray,
       });
+      console.log("Response & DriversMeta:", response.data.driverMapMetas, drivers)
     } catch (error) {
       // console.error("Error fetching getDriverMetas:", error);
       // toast.error("Something went wrong whilst fetching drivers map meta");
@@ -352,6 +354,7 @@ export const useTasksMapMeta = create((set) => ({
         tasks: tasksArray,
         taskItems: taskItemArray,
       });
+      console.log("Response & TasksMeta:", response.data.taskMapMetas, tasks)
     } catch (error) {
       // console.error("Error fetching getTasksMetas:", error);
       // toast.error("Something went wrong whilst fetching tasks map meta");

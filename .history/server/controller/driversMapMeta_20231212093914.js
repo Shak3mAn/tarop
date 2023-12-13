@@ -18,6 +18,7 @@ router.post("/create-driver-map-meta", async (req, res, next) => {
 router.get("/get-driver-map-meta", async (req, res, next) => {
   try {
     const { email } = req.query;
+    console.log("Request DriverMapMeta email:", email)
 
     const driverMapMeta = await DriversMapMeta.findOne({ email});
 

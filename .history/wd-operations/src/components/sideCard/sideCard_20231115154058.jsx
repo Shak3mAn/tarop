@@ -8,6 +8,7 @@ import { SideSeparator} from "../ui/sidebar/sideseparator";
 const SideCard = () => {
 
   const handleClick = async () => {
+    console.log("Open New Schedule Modal")
   }
 
   return (

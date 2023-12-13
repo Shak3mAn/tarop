@@ -169,6 +169,8 @@ export const MapView = () => {
         }
       }
     );
+
+    console.log("IsDistance:", isDistance.isDistance);
   };
 
   const onMarkerDragEndSource = (coord) => {

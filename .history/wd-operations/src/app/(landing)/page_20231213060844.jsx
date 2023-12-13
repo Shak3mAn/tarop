@@ -26,8 +26,11 @@ const LandingPage = () => {
   }, []);
 
   useEffect(() => {
+    console.log("Is signed in", isSignedIn);
     if (!isSignedIn) return;
 
+    console.log("The User: ", person);
+    console.log("The TempUser: ", tempUser);
     const fetchUserTempUser = async () => {
       if (isLoaded) {
         const userData = { email: user?.primaryEmailAddress.emailAddress };
@@ -35,6 +38,7 @@ const LandingPage = () => {
         await fetchUser(userData);
 
         if (!tempUser && !person) {
+          console.log("Creating a New Temp User");
           const newTempUser = {
             name: user.fullName,
             email: user.primaryEmailAddress.emailAddress,
@@ -42,6 +46,8 @@ const LandingPage = () => {
             isApproved: false,
             isCongratulationOpened: false,
           };
+
+          console.log("The new Users Info", newTempUser);
 
           addTempUser(newTempUser);
         }

@@ -58,6 +58,7 @@ const MoreMenu = () => {
             </Dropdown.Trigger>
             <DropdownMenuContent align="end">
                 <DropdownMenuItem
+                    onClick={() => console.log("Redirect to Downloads")}
                 >
                     Downloads
                 </DropdownMenuItem>

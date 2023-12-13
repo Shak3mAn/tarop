@@ -102,6 +102,8 @@ router.patch("/update-driver/:id", async (req, res, next) => {
   try {
     const driverId = req.params.id;
 
+    console.log("The Entire Request Body:", req.body);
+
     const updateDriver = await Driver.findByIdAndUpdate(driverId, req.body, {
       new: true,
     });

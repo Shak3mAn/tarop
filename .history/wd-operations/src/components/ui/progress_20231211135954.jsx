@@ -16,6 +16,7 @@ const Progress = React.forwardRef(({ className, value }, ref) => {
     if (!value) return; 
 
     setProgress(value);
+    console.log("Progress Value:", progress);
   }, [value]);
   return (
     <ProgressPrimitive.Root

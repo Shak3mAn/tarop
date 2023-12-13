@@ -49,6 +49,7 @@ export const AccountForm = ({ initialData }) => {
   });
 
   const onSubmit = () => {
+    console.log("onSubmit");
   };
 
   return (

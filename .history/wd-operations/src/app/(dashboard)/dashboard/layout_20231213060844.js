@@ -46,6 +46,7 @@ export default function DashboardLayout({ children }) {
 
   useEffect(() => {
     const fetchDataAndLocation = async () => {
+      console.log("this is before")
       // Fetch user data if the user is loaded
       if (isLoaded) {
         const userData = { email: user?.primaryEmailAddress.emailAddress };
@@ -58,6 +59,10 @@ export default function DashboardLayout({ children }) {
             lng: pos.coords.longitude,
           });
         });
+        
+        // console.log("User's Location:", userLocation)
+
+        // console.log("User's Name", name);
 
         // Perform actions based on user role
         if (getUserRole() === "Driver") {
@@ -84,6 +89,7 @@ export default function DashboardLayout({ children }) {
         const userData = { email: user?.primaryEmailAddress.emailAddress };
         await fetchUser(userData);
 
+        // console.log("This is the person:", person);
         if (person?.isCongratulationOpened) {
           onUserCongratulationOpened();
         }
@@ -92,6 +98,7 @@ export default function DashboardLayout({ children }) {
 
     fetchCongratulations();
 
+    // console.log("congrats,", isUserCongratulationOpened);
   }, [isLoaded, person?.isCongratulationOpened, user]);
   useEffect(() => {
     const timer = setTimeout(() => {

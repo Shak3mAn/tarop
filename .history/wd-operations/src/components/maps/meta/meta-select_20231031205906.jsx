@@ -6,6 +6,7 @@ import * as Select from '@radix-ui/react-select';
 
 export const MetaSelect = () => {
     const handleOnChange = (value) => {
+        console.log("handleChange")
     }
 
     return (

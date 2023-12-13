@@ -37,6 +37,8 @@ export default function RootLayout({ children }) {
 
   useEffect(() => {
     getUserLocation();
+
+    console.log("User location", userLocation);
   }, []);
 
   return (

@@ -39,6 +39,7 @@ export const useTeamStore = create((set) => ({
       //     name: team.teamColor,
       //   })),
       // });
+      // console.log("This is the response", response.data.teams);
     } catch (error) {
       console.error("Error fetching teams:", error);
       // toast.error(

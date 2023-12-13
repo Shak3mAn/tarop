@@ -57,6 +57,7 @@ export const TeamItem = ({ team }) => {
   };
 
   useEffect(() => {
+    console.log("Team Selected Data:", team);
     distanceMatrixTask();
     directionRouteTask();
     distanceMatrixDriver();

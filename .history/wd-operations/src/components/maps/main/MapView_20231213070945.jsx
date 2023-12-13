@@ -1,24 +1,21 @@
 "use client";
 
-import { GoogleMap, useJsApiLoader } from "@react-google-maps/api";
-import * as Geocode from "react-geocode";
+import { GoogleMap, MarkerF, useJsApiLoader } from "@react-google-maps/api";
 import React, { useContext, useEffect, useState } from "react";
 
 import { UserLocationContext } from "../../../lib/context/context";
+import { MainMapTools } from "../tools/main-map-tools";
 
-import { useDashMapSwitcher } from "../../../store/use-general";
+import { useMainMapSwitcher } from "../../../store/use-general";
 import {
   useDriversMapMeta,
   useTeamsMapMeta,
   useTasksMapMeta,
 } from "../../../store/api/map-meta-store";
 
-import { TeamItem } from "../modals/lists/team-item";
-import { TaskItem } from "../modals/lists/task-item";
-import { DriverItem } from "../modals/lists/driver-item";
-
-import { DashMapTools } from "../tools/dash-map-tools";
-
+import { TeamItem } from "./lists/main-team-item";
+import { TaskItem } from "./lists/main-task-item";
+import { DriverItem } from "./lists/main-driver-item";
 //TODO: Alter the Markers to include the Place API, introduce the Markers for distance difference matrix API, and Live Tracking API.
 //TODO: Ensures UI between Markers is color dependent on the team "COLOR"
 //TODO: Add Icon Marker in `MarkerF`
@@ -26,7 +23,7 @@ import { DashMapTools } from "../tools/dash-map-tools";
 
 const containerStyle = {
   width: "100%",
-  height: "600px",
+  height: "650px",
   borderRadius: "12px",
 };
 
@@ -35,21 +32,17 @@ export const MapView = () => {
     googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_API_KEY,
   });
 
-  Geocode.setDefaults({
-    key: `${process.env.NEXT_PUBLIC_GOOGLE_API_KEY}`,
-    language: "en",
-    region: "ke",
-  });
+  const [map, setMap] = useState();
 
   const { userLocation, setUserLocation } = useContext(UserLocationContext);
 
-  const { isDashMap } = useDashMapSwitcher();
+  const { isMainMap } = useMainMapSwitcher();
   const { fetchTeamsMeta, teamsMeta } = useTeamsMapMeta();
   const { fetchDriversMeta, driversMeta } = useDriversMapMeta();
   const { fetchTasksMeta, tasksMeta } = useTasksMapMeta();
 
   const [userSrc, setUserSrc] = useState({
-    lat: -1.2921,
+    lat: 1.2921,
     lng: 36.8219,
     label: "home",
   });
@@ -69,7 +62,7 @@ export const MapView = () => {
   const [task, setTask] = useState({
     task: "task",
     source: {
-      lat: -1.2921,
+      lat: 1.2921,
       lng: 36.8219,
       label: "home",
       address: "",
@@ -78,7 +71,7 @@ export const MapView = () => {
       country: "",
     },
     destination: {
-      lat: -1.2921,
+      lat: 1.2921,
       lng: 36.8219,
       label: "destination",
       address: "",
@@ -259,6 +252,7 @@ export const MapView = () => {
   useEffect(() => {
     //Initializing (Booting)
     setTasks([]);
+    console.log("TasksMeta:", tasksMeta);
 
     tasksMeta.map((task, i) => {
       setTasks((state) => [
@@ -304,9 +298,9 @@ export const MapView = () => {
     /* Teams */
   }
   useEffect(() => {
-    //Initializing (Booting)
     setTeams([]);
 
+    console.log("TeamsMeta:", teamsMeta);
     teamsMeta.map((gTeam, i) => {
       setTeams((state) => [
         ...state,
@@ -337,6 +331,7 @@ export const MapView = () => {
       ]);
     });
 
+    console.log("Sample Teams:", teams);
   }, [teamsMeta]);
 
   {
@@ -346,6 +341,7 @@ export const MapView = () => {
     //Initializing (Booting)
     setDrivers([]);
 
+    console.log("DriversMeta:", driversMeta);
     driversMeta.map((gDriver, i) => {
       setDrivers((state) => [
         ...state,
@@ -384,9 +380,9 @@ export const MapView = () => {
     /* Task */
   }
   useEffect(() => {
-    if (isDashMap != {}) {
+    if (isMainMap != {}) {
       tasks.map((task, i) => {
-        if (task.task == isDashMap.label) {
+        if (task.task == isMainMap.label) {
           setTask({
             task: task.task,
             source: {
@@ -426,15 +422,15 @@ export const MapView = () => {
     }
     // console.log("Sample Task:", task);
     // console.log("Tasks Afterwards:", tasks);
-  }, [isDashMap]);
+  }, [isMainMap]);
 
   {
     /* Team */
   }
   useEffect(() => {
-    if (isDashMap != {}) {
+    if (isMainMap != {}) {
       teams.map((team, i) => {
-        if (team.team == isDashMap.label) {
+        if (team.team == isMainMap.label) {
           setTeam({
             team: team.team,
             info: {
@@ -464,14 +460,14 @@ export const MapView = () => {
     }
     // console.log("Sample Team:", team);
     // console.log("Teams Afterwards:", teams);
-  }, [isDashMap]);
+  }, [isMainMap]);
   {
     /* Driver */
   }
   useEffect(() => {
-    if (isDashMap != {}) {
+    if (isMainMap != {}) {
       drivers.map((driver, i) => {
-        if (driver.driver == isDashMap.label) {
+        if (driver.driver == isMainMap.label) {
           setDriver({
             driver: driver.driver,
             info: {
@@ -502,55 +498,58 @@ export const MapView = () => {
     }
     // console.log("Sample Driver:", driver);
     // console.log("Drivers Afterwards:", drivers);
-  }, [isDashMap]);
+  }, [isMainMap]);
 
   return isLoaded ? (
     <>
-      <DashMapTools />
-      <div className="shadow-md rounded-xl">
-        <GoogleMap
-          mapContainerStyle={containerStyle}
-          center={userLocation}
-          zoom={15}
-          options={{
-            zoomControl: false,
-            streetViewControl: false,
-            mapTypeControl: false,
-            fullscreenControl: false,
-          }}
-        >
-          {/* Child components, such as markers, info windows, etc. */}
-          <>
-            {isDashMap && isDashMap.label == team.team ? (
-              <>
-                <TeamItem team={team} />
-              </>
-            ) : (
-              <> </>
-            )}
-            {/* Task */}
-            {isDashMap && isDashMap.label == task.task ? (
-              <>
-                <TaskItem task={task} />
-              </>
-            ) : (
-              <> </>
-            )}
-            {/* Driver */}
-            {isDashMap && isDashMap.label == driver.driver ? (
-              <>
-                <DriverItem driver={driver} />
-              </>
-            ) : (
-              <> </>
-            )}
-          </>
-        </GoogleMap>
+      <div className="px-2">
+        <MainMapTools />
+        <div className="shadow-lg rounded-xl">
+          <GoogleMap
+            mapContainerStyle={containerStyle}
+            center={userLocation}
+            zoom={15}
+            options={{
+              zoomControl: false,
+              streetViewControl: false,
+              mapTypeControl: false,
+              fullscreenControl: false,
+            }}
+          >
+            {/* Child components, such as markers, info windows, etc. */}
+            <>
+              {/* Team */}
+              {isMainMap && isMainMap.label == team.team ? (
+                <>
+                  <TeamItem team={team} />
+                </>
+              ) : (
+                <> </>
+              )}
+              {/* Task */}
+              {isMainMap && isMainMap.label == task.task ? (
+                <>
+                  <TaskItem task={task} />
+                </>
+              ) : (
+                <> </>
+              )}
+              {/* Driver */}
+              {isMainMap && isMainMap.label == driver.driver ? (
+                <>
+                  <DriverItem driver={driver} />
+                </>
+              ) : (
+                <> </>
+              )}
+            </>
+          </GoogleMap>
+        </div>
       </div>
     </>
   ) : (
     <>
-      <div className="h-[450px] w-full rounded-[12px] flex items-center justify-center bg-primary/50 ">
+      <div className="h-[650px] w-full rounded-[12px] flex items-center justify-center bg-primary/75 opacity-50">
         Subiri! Let it Load!!
       </div>
     </>

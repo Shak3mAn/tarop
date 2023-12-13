@@ -12,28 +12,24 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 
 import {
-  useMainMapModalTools,
-  useMainTeamDistance,
-  useMainTeamDirection,
+  useDashMapModalTools,
+  useTeamDistance,
+  useTeamDirection,
 } from "../../../../store/maps/use-meta-maps";
-import { useMainMapSwitcher } from "../../../../store/use-general";
+import { useDashMapSwitcher } from "../../../../store/use-general";
 
 export const TeamItem = ({ team }) => {
   // const [distanceMatrixInfo, setDistanceMatrixInfo] = useState([]);
   const [taskDRPs, setTaskDRPs] = useState([]);
   const [driverDRPs, setDriverDRPs] = useState([]);
-  const { isMainMap } = useMainMapSwitcher();
+  const { isDashMap } = useDashMapSwitcher();
 
-  const routeToggle = useMainMapModalTools();
-  const addTaskDistance = useMainTeamDistance((state) => state.addTaskDistance);
-  const addDriverDistance = useMainTeamDistance((state) => state.addDriverDistance);
+  const routeToggle = useDashMapModalTools();
+  const addTaskDistance = useTeamDistance((state) => state.addTaskDistance);
+  const addDriverDistance = useTeamDistance((state) => state.addDriverDistance);
 
-  const { isTaskDistance, isDriverDistance } = useMainTeamDistance();
+  const { isTaskDistance, isDriverDistance } = useTeamDistance();
 
-  // const [srcTemp, setSrcTemp] = useState({
-  //   lat: 0,
-  //   lng: 0,
-  // });
   const [dstTaskTemp, setDstTaskTemp] = useState({
     lat: 0,
     lng: 0,
@@ -62,9 +58,7 @@ export const TeamItem = ({ team }) => {
     distanceMatrixDriver();
     directionRouteDriver();
 
-    // console.log("The TaskDistance;", isTaskDistance);
-    // console.log("The DriverDistance:", isDriverDistance);
-  }, [isMainMap]);
+  }, [isDashMap]);
 
   useEffect(() => {
     if (destinationDriver != dstDriverTemp) {
@@ -136,11 +130,7 @@ export const TeamItem = ({ team }) => {
       },
       (result, status) => {
         if (status === google.maps.DistanceMatrixStatus.OK) {
-          // console.log("DMS Team-Switcher Driver Result:", result);
-          // console.log(
-          //   "Rows Distance",
-          //   result.rows[0].elements[0].distance.text
-          // );
+        
           addDriverDistance({
             originAddress: result.originAddresses[0],
             destinationAddress: result.destinationAddresses[0],
@@ -167,11 +157,7 @@ export const TeamItem = ({ team }) => {
       },
       (result, status) => {
         if (status === google.maps.DistanceMatrixStatus.OK) {
-          // console.log("DMS Team-Switcher Task Result:", result);
-          // console.log(
-          //   "Rows Distance",
-          //   result.rows[0].elements[0].distance.text
-          // );
+        
           //   setDistanceMatrixInfo(result);
           addTaskDistance({
             originAddress: result.originAddresses[0],
@@ -199,7 +185,6 @@ export const TeamItem = ({ team }) => {
       },
       (result, status) => {
         if (status === google.maps.DirectionsStatus.OK) {
-          // console.log("DirectionsService Result:", result);
           setTaskDRPs(result);
           // addTaskDirection(result);
         } else {
@@ -220,7 +205,7 @@ export const TeamItem = ({ team }) => {
       },
       (result, status) => {
         if (status === google.maps.DirectionsStatus.OK) {
-          // console.log("DirectionsService Result:", result);
+          console.log("DirectionsService Result:", result);
           setDriverDRPs(result);
           // addDriverDirection(result);
         } else {

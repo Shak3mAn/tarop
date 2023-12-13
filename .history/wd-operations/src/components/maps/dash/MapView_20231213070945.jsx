@@ -337,6 +337,7 @@ export const MapView = () => {
       ]);
     });
 
+    console.log("Sample Teams:", teams);
   }, [teamsMeta]);
 
   {

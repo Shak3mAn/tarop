@@ -77,9 +77,11 @@ export const TeamForm = ({
     })
 
     const onSubmit = () => {
+        console.log("onSubmit")
     }
 
     const onDelete = () => {
+        console.log("onDelete")
     }
 
     return (

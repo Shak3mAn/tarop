@@ -59,6 +59,9 @@ const Notifications = () => {
 
   const { deleteNotifications, fetchNotifications, notifications } =
     useNotificationStore();
+  const handleClick = () => {
+    console.log("Alters Reading State");
+  };
 
   React.useEffect(() => {
     const fetchNots = async () => {

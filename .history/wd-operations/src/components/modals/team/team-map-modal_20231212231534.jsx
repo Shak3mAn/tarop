@@ -95,6 +95,7 @@ export const TeamMapModal = () => {
   });
 
   const onSubmit = () => {
+    console.log("onSubmit");
   };
 
   useEffect(() => {
