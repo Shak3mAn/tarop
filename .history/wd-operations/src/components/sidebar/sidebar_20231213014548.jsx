@@ -215,7 +215,7 @@ const Sidebar = () => {
               </div>
 
               <div className="space-y-1">
-                {person?.role === "Admin" && (
+                {person.role === "Admin" && (
                   <>
                     {adminRoutes.map((route) => (
                       <Link
@@ -241,7 +241,7 @@ const Sidebar = () => {
                     ))}
                   </>
                 )}
-                {person?.role === "Driver" && (
+                {person.role === "Driver" && (
                   <>
                     {driverRoutes.map((route) => (
                       <Link
@@ -267,8 +267,8 @@ const Sidebar = () => {
                     ))}
                   </>
                 )}
-                {(person?.role === "Operation Coordinator" ||
-                  person?.role === "Support Coordinator") && (
+                {(person.role === "Operation Coordinator" ||
+                  person.role === "Support Coordinator") && (
                   <>
                     {generalRoutes.map((route) => (
                       <Link
@@ -294,7 +294,7 @@ const Sidebar = () => {
                     ))}
                   </>
                 )}
-                {person?.role !== "Driver" && (
+                {person.role !== "Driver" && (
                   <>
                     <SideSeparator />
 
@@ -397,7 +397,7 @@ const Sidebar = () => {
 
               {/* Links */}
               <div className="space-y-1">
-                {person?.role === "Admin" && (
+                {person.role === "Admin" && (
                   <>
                     {adminRoutes.map((route) => (
                       <Tooltip.Root key={route.href}>
@@ -426,7 +426,7 @@ const Sidebar = () => {
                     ))}
                   </>
                 )}
-                {person?.role === "Driver" && (
+                {person.role === "Driver" && (
                   <>
                     {driverRoutes.map((route) => (
                       <Tooltip.Root key={route.href}>
@@ -455,8 +455,8 @@ const Sidebar = () => {
                     ))}
                   </>
                 )}
-                {(person?.role === "Operation Coordinator" ||
-                  person?.role === "Support Coordinator") && (
+                {(person.role === "Operation Coordinator" ||
+                  person.role === "Support Coordinator") && (
                   <>
                     {generalRoutes.map((route) => (
                       <Tooltip.Root key={route.href}>
@@ -485,7 +485,7 @@ const Sidebar = () => {
                     ))}
                   </>
                 )}
-                {!person?.role === "Driver" && <SideSeparator />}
+                {!person.role === "Driver" && <SideSeparator />}
               </div>
             </div>
 

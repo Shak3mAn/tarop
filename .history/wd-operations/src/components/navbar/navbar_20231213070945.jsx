@@ -149,12 +149,12 @@ const Navbar = ({ isSidebarOpen, setIsSidebarOpen }) => {
               <></>
             )}
           </div>
-          {person?.role === "Admin" && (
+          {person.role === "Admin" && (
             <>
               <Approvals />
             </>
           )}
-          {person?.role !== "Driver" ? (
+          {person.role !== "Driver" ? (
             <>
               {/* <CallsToggle /> */}
               {/* <Approvals /> */}
@@ -174,7 +174,7 @@ const Navbar = ({ isSidebarOpen, setIsSidebarOpen }) => {
           <UserButton />
         </div>
         <div className="flex ml-auto sm:hidden items-center space-x-2">
-          {person?.role !== "Driver" ? (
+          {person.role !== "Driver" ? (
             <>
               {/* <CallsToggle /> */}
               <Notifications />
