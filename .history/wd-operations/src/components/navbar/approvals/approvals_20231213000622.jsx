@@ -109,7 +109,7 @@ const Approvals = () => {
       if (!person.isApproved) {
         approvals.map((approval) => {
           if (approval.title == person.name) {
-            if (person?.role == "Driver") {
+            if (person.role == "Driver") {
               const driverData = {
                 driver: person.name,
                 phoneNo: person.phoneNo,
@@ -130,7 +130,7 @@ const Approvals = () => {
               } catch (error) {
                 console.error("Error creating driver:", error);
               }
-            } else if (person?.role == "Support Coordinator") {
+            } else if (person.role == "Support Coordinator") {
               const supportData = {
                 fullName: person.name,
                 firstName: person.first,
@@ -155,7 +155,7 @@ const Approvals = () => {
               } catch (error) {
                 console.error("Error creating support:", error);
               }
-            } else if (person?.role == "Operation Coordinator") {
+            } else if (person.role == "Operation Coordinator") {
               const operatorData = {
                 fullName: person?.name ? person?.name : "T.B.C",
                 firstName: person.first,
