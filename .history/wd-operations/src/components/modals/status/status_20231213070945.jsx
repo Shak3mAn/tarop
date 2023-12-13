@@ -143,7 +143,7 @@ export const StatusModal = () => {
             </div>
             <div className="flex flex-col">
               <DialogTitle>Status</DialogTitle>
-              <DialogDescription>Update a task&apos;s status</DialogDescription>
+              <DialogDescription>Update a task's status</DialogDescription>
             </div>
           </div>
         </DialogHeader>

@@ -26,7 +26,6 @@ const TabsContent = React.forwardRef(
     );
   }
 );
-TabContent.displayName = TabPrimitive.Content.displayName
 
 export {
     Tabs,
