@@ -394,7 +394,7 @@ export const EditAdminModal = ({
                       )}
                     />
 
-                    <div className="pt-10 pb-6 space-x-2 flex items-center justify-end w-full">
+                    <div className="pt-10 space-x-2 flex items-center justify-end w-full">
                       <DialogPrimitive.Close asChild>
                         <Button disabled={loading} variant="outline">
                           Cancel

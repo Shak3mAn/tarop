@@ -6,7 +6,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { cva } from "class-variance-authority";
 import * as DialogPrimitive from "@radix-ui/react-dialog";
-import { Edit, Users } from "lucide-react";
+import { Plus, Users } from "lucide-react";
 import { useUser } from "@clerk/nextjs";
 
 import { useTeamStore } from "../../../store/api/team-store";
@@ -15,7 +15,6 @@ import { useEventStore } from "../../../store/api/event-store";
 import {
   useTeamsMapMeta,
   useDriversMapMeta,
-  useTasksMapMeta,
 } from "../../../store/api/map-meta-store";
 import {
   useDistance,
@@ -34,7 +33,6 @@ import { Input } from "../../ui/input";
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -60,7 +58,7 @@ const buttonVariants = cva(
         destructive:
           "bg-destructive text-destructive-foreground hover:bg-destructive/90",
         outline:
-          "border border-input border-hidden bg-background hover:bg-accent hover:text-accent-foreground",
+          "border border-input bg-background hover:bg-accent hover:text-accent-foreground",
         secondary:
           "bg-secondary text-secondary-foreground hover:bg-secondary/80",
         ghost: "hover:bg-accent hover:text-accent-foreground",
@@ -70,7 +68,7 @@ const buttonVariants = cva(
         default: "h-10 px-4 py-2",
         sm: "h-9 rounded-md px-3",
         lg: "h-11 rounded-md px-8",
-        icon: "h-7 w-7",
+        icon: "h-10 w-10",
       },
     },
     defaultVariants: {
@@ -80,89 +78,79 @@ const buttonVariants = cva(
   }
 );
 
-export const EditAdminModal = ({
-  initialData,
+export const MainCreateAdminModal = ({
   statuses,
   drivers,
   driversInfo,
   supportCoord,
   operationCoord,
-  className,
 }) => {
-  const [isOpen, setIsOpen] = useState(false);
   const [loading, setLoading] = useState(false);
 
   const { isTeam } = useLatLngPicker();
   const { isTeamGeoInfo } = useDistance();
 
-  const { updateTeam, teamMapMeta, driverMapMeta, taskMapMeta } =
-    useTeamStore();
+  const { addTeam, teamMapMeta, driverMapMeta, teams } = useTeamStore();
   const { addNotification } = useNotificationStore();
   const { addEvent } = useEventStore();
   const { user } = useUser();
-  const { updateNewTeamMeta } = useTeamsMapMeta();
-  const { updateNewDriverMeta } = useDriversMapMeta();
-  const { updateNewTaskMeta } = useTasksMapMeta();
+  const { addNewTeamMeta } = useTeamsMapMeta();
+  const { addNewDriverMeta } = useDriversMapMeta();
 
   const router = useRouter();
 
-  const defaultValues = initialData
-    ? { ...initialData }
-    : {
-        team: "",
-        teamColor: "",
-        operationCoordinator: "",
-        supportCoordinator: "",
-        driver: "",
-        status: "",
-      };
+  const defaultValues = {
+    team: "",
+    teamColor: "",
+    operationCoordinator: "",
+    supportCoordinator: "",
+    driver: "",
+    status: "",
+  };
 
   const form = useForm({
     defaultValues,
   });
 
   const onSubmit = async (data) => {
-
     const driverLocation = driversInfo.filter(
       (driver) => driver.driver === data.driver
     );
 
-    const updateData = {
+    const newData = {
       ...data,
       driverId: driverLocation[0].driverId,
       cachedLocation: {
-        lat: isTeam?.lat,
-        lng: isTeam?.lng,
+        lat: isTeam.lat,
+        lng: isTeam.lng,
         address: !isTeam?.label ? isTeamGeoInfo?.address : isTeam?.label,
       },
       setLocation: {
-        lat: isTeam?.lat,
-        lng: isTeam?.lng,
+        lat: isTeam.lat,
+        lng: isTeam.lng,
         address: !isTeam?.label ? isTeamGeoInfo?.address : isTeam?.label,
       },
-      driverLocation: driverLocation[0],
     };
 
     const notificationData = {
       instigator: user?.fullName ? user.fullName : "User",
-      title: "Admin",
-      action: "Updated",
-      description: `Team: ${data.team} has been updated`,
+      title: "Team",
+      action: "Created",
+      description: `Team: ${data.team} has been created`,
       team: data.team,
     };
 
     try {
       setLoading(true);
-      updateTeam(data.id, updateData);
+      addTeam(newData, driverLocation[0]);
       addNotification(notificationData);
       addEvent(notificationData);
-      updateNewTeamMeta(teamMapMeta);
-      updateNewDriverMeta(driverMapMeta);
-      updateNewTaskMeta(taskMapMeta);
+      addNewTeamMeta(teamMapMeta);
+      addNewDriverMeta(driverMapMeta);
       form.reset();
       router.refresh();
     } catch (error) {
-      console.error("Error updating team:", error);
+      console.error("Error creating admin:", error);
     } finally {
       setLoading(false);
     }
@@ -173,14 +161,15 @@ export const EditAdminModal = ({
         <DialogPrimitive.Trigger asChild>
           <button
             className={cn(
-              buttonVariants({
-                variant: "outline",
-                size: "icon",
-                className: className,
-              })
+              buttonVariants({ variant: "default", size: "default" })
             )}
           >
-            <Edit className="h-4 w-4" />
+           <div className="hidden md:flex">
+              <Users className="h-4 w-4 mr-2" /> Add New
+            </div>
+            <div className="flex md:hidden">
+              <Users className="h-4 w-4" />
+            </div>
           </button>
         </DialogPrimitive.Trigger>
 
@@ -192,17 +181,18 @@ export const EditAdminModal = ({
               </div>
               <div className="flex flex-col">
                 <DialogTitle>Team</DialogTitle>
-                <DialogDescription>Edit existing team</DialogDescription>
+                <DialogDescription>Add new team</DialogDescription>
               </div>
             </div>
 
             <div className="flex items-center justify-center space-x-2">
               <TeamMapModal />
               <WarningModal
-              title={"Warning!"}
-              description={
-                "Before making any modifications to the `Team`, ensure that the team's location fields are updated appropriately. Exercise caution particularly when altering the status, as unintended consequences may arise. Your diligence in this matter is greatly appreciated."}
-            />
+                title={"Warning!"}
+                description={
+                  "Before making any modifications to the `Team`, ensure that the team's location fields are updated appropriately. Exercise caution particularly when altering the status, as unintended consequences may arise. Your diligence in this matter is greatly appreciated."
+                }
+              />
             </div>
           </DialogHeader>
 
@@ -394,7 +384,7 @@ export const EditAdminModal = ({
                       )}
                     />
 
-                    <div className="pt-10 pb-6 space-x-2 flex items-center justify-end w-full">
+                    <div className="pt-10 space-x-2 flex items-center justify-end w-full">
                       <DialogPrimitive.Close asChild>
                         <Button disabled={loading} variant="outline">
                           Cancel
