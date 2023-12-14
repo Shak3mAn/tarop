@@ -39,10 +39,10 @@ export const DateTimePicker = () => {
       minutes: time.getMinutes(),
     });
 
-    console.log("Combined Start Time Date: ", combinedStartTimeDate);
+    // console.log("Combined Start Time Date: ", combinedStartTimeDate);
 
     addStartTime({
-      combinedStartTimeDate: combinedStartTimeDate,
+      combinedStartTimeDate,
     });
     addStartDate(startDate);
 
@@ -73,7 +73,7 @@ export const DateTimePicker = () => {
 
     // console.log("Combined End Time Date: ", combinedEndTimeDate);
 
-    addEndTime({ combinedEndTimeDate: combinedEndTimeDate});
+    addEndTime(combinedEndTimeDate);
 
     addEndTimePicker({
       endTime: combinedEndTimeDate,
