@@ -224,7 +224,7 @@ export const ScheduleModal = ({ statuses, teams }) => {
             <WarningModal
               title={"Warning!"}
               description={
-                "If you plan on creating the `Task`, kindly ensure that you have updated the source's & destination's location, and `startTime`, `startDate` & `endTime` fields accordingly before submission. Your attention to this matter is appreciated."
+                "If you plan on modifying the `Task`, kindly ensure that you have updated the source's & destination's location, and `startTime`, `startDate` & `endTime` fields accordingly before submission. Your attention to this matter is appreciated."
               }
             />
           </DialogHeader>

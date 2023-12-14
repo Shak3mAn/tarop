@@ -2,6 +2,7 @@
 
 import * as z from "zod";
 import { useForm } from "react-hook-form";
+import { toast } from "react-hot-toast";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { cva } from "class-variance-authority";
@@ -19,7 +20,6 @@ import {
 } from "../../../store/maps/use-location-picker";
 import { useTaskStore } from "../../../store/api/tasks-store";
 import { useDriverStore } from "../../../store/api/driver-store";
-
 import { useNotificationStore } from "../../../store/api/notification-store";
 import { useEventStore } from "../../../store/api/event-store";
 import {
@@ -41,7 +41,6 @@ import { Input } from "../../ui/input";
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -61,8 +60,10 @@ import { Editor } from "../../editor/editor";
 import { WarningModal } from "../alert/warning-modal";
 import { cn } from "../../../lib/utils/utils";
 
+import { statuses } from "../../../lib/utils/data";
+
 const buttonVariants = cva(
-  "inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50",
+  "inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 cursor-pointer",
   {
     variants: {
       variant: {
@@ -70,17 +71,17 @@ const buttonVariants = cva(
         destructive:
           "bg-destructive text-destructive-foreground hover:bg-destructive/90",
         outline:
-          "border border-input bg-background hover:bg-accent hover:text-accent-foreground",
+          "border border-input rounded-full bg-background hover:bg-accent hover:text-accent-foreground",
         secondary:
           "bg-secondary text-secondary-foreground hover:bg-secondary/80",
         ghost: "hover:bg-accent hover:text-accent-foreground",
         link: "text-primary underline-offset-4 hover:underline",
       },
       size: {
-        default: "h-10 px-4 py-2",
+        default: "h-10 w-full",
         sm: "h-9 rounded-md px-3",
         lg: "h-11 rounded-md px-8",
-        icon: "h-10 w-10",
+        icon: "h-7 w-7",
       },
     },
     defaultVariants: {
@@ -90,7 +91,7 @@ const buttonVariants = cva(
   }
 );
 
-export const ScheduleModal = ({ statuses, teams }) => {
+export const CreateTaskModal = () => {
   const isToggleTab = useToggleTaskTab();
   const [loading, setLoading] = useState(false);
 
@@ -202,16 +203,17 @@ export const ScheduleModal = ({ statuses, teams }) => {
       <DialogPrimitive.Root>
         <DialogPrimitive.Trigger asChild>
           <button
-            className={cn(buttonVariants({ variant: "outline", size: "icon" }))}
-            onClick={isToggleTab.onDetails}
+            className={cn(
+              buttonVariants({ variant: "default", size: "default" })
+            )}
           >
-            <Plus className="h-4 w-4 transition-all rounded-full" />
+            <Plus className="h-4 w-4" />
           </button>
         </DialogPrimitive.Trigger>
 
         <DialogContent>
           <DialogHeader className="pt-4 flex flex-row items-center justify-between">
-            <div className="flex space-x-2">
+            <div className="flex space-x-3">
               <div className="h-7 w-7 rounded-full border items-center flex justify-center">
                 <FileSpreadsheet className="h-4 w-4" />
               </div>
@@ -224,7 +226,7 @@ export const ScheduleModal = ({ statuses, teams }) => {
             <WarningModal
               title={"Warning!"}
               description={
-                "If you plan on creating the `Task`, kindly ensure that you have updated the source's & destination's location, and `startTime`, `startDate` & `endTime` fields accordingly before submission. Your attention to this matter is appreciated."
+                "If you plan on modifying the `Task`, kindly ensure that you have updated the source's & destination's location, and `startTime`, `startDate` & `endTime` fields accordingly before submission. Your attention to this matter is appreciated."
               }
             />
           </DialogHeader>
@@ -348,7 +350,7 @@ export const ScheduleModal = ({ statuses, teams }) => {
                                     </SelectTrigger>
                                   </FormControl>
                                   <SelectContent>
-                                    {teams.map((team) => (
+                                    {teamsName.map((team) => (
                                       <SelectItem
                                         key={team.id}
                                         value={team.name}
@@ -362,7 +364,6 @@ export const ScheduleModal = ({ statuses, teams }) => {
                               </FormItem>
                             )}
                           />
-
                           <FormField
                             control={form.control}
                             name="status"

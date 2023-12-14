@@ -1,8 +1,9 @@
 "use client";
 
 import * as z from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { useEffect, useState } from "react";
+import { useEffect, useLayoutEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { cva } from "class-variance-authority";
 import * as DialogPrimitive from "@radix-ui/react-dialog";
@@ -19,7 +20,6 @@ import {
 } from "../../../store/maps/use-location-picker";
 import { useTaskStore } from "../../../store/api/tasks-store";
 import { useDriverStore } from "../../../store/api/driver-store";
-
 import { useNotificationStore } from "../../../store/api/notification-store";
 import { useEventStore } from "../../../store/api/event-store";
 import {
@@ -61,8 +61,10 @@ import { Editor } from "../../editor/editor";
 import { WarningModal } from "../alert/warning-modal";
 import { cn } from "../../../lib/utils/utils";
 
+import { teams, statuses } from "../../../lib/utils/data";
+
 const buttonVariants = cva(
-  "inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50",
+  "inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 cursor-pointer",
   {
     variants: {
       variant: {
@@ -70,7 +72,7 @@ const buttonVariants = cva(
         destructive:
           "bg-destructive text-destructive-foreground hover:bg-destructive/90",
         outline:
-          "border border-input bg-background hover:bg-accent hover:text-accent-foreground",
+          "border border-input rounded-full bg-background hover:bg-accent hover:text-accent-foreground",
         secondary:
           "bg-secondary text-secondary-foreground hover:bg-secondary/80",
         ghost: "hover:bg-accent hover:text-accent-foreground",
@@ -80,7 +82,7 @@ const buttonVariants = cva(
         default: "h-10 px-4 py-2",
         sm: "h-9 rounded-md px-3",
         lg: "h-11 rounded-md px-8",
-        icon: "h-10 w-10",
+        icon: "h-7 w-7",
       },
     },
     defaultVariants: {
@@ -90,9 +92,16 @@ const buttonVariants = cva(
   }
 );
 
-export const ScheduleModal = ({ statuses, teams }) => {
+export const MainCreateTaskModal = () => {
   const isToggleTab = useToggleTaskTab();
   const [loading, setLoading] = useState(false);
+
+  // useLayoutEffect(() => {
+  //   <Script
+  //     src={`https://maps.googleapis.com/maps/api/js?key=${process.env.NEXT_PUBLIC_GOOGLE_API_KEY}&libraries=places`}
+  //     strategy="beforeInteractive"
+  //   />;
+  // }, []);
 
   const { isTimePicker } = useTimePicker();
   const { isFrom, isTo } = useLatLngPicker();
@@ -179,7 +188,7 @@ export const ScheduleModal = ({ statuses, teams }) => {
       description: `Task: ${data.name} has been created`,
       team: data.team,
     };
-
+    
     try {
       setLoading(true);
       await addTask(newData, teamInfo[0], driverLocation[0]);
@@ -202,10 +211,16 @@ export const ScheduleModal = ({ statuses, teams }) => {
       <DialogPrimitive.Root>
         <DialogPrimitive.Trigger asChild>
           <button
-            className={cn(buttonVariants({ variant: "outline", size: "icon" }))}
-            onClick={isToggleTab.onDetails}
+            className={cn(
+              buttonVariants({ variant: "default", size: "default" })
+            )}
           >
-            <Plus className="h-4 w-4 transition-all rounded-full" />
+            <div className="hidden md:flex">
+              <Plus className="h-4 w-4 mr-2" /> Add New
+            </div>
+            <div className="flex md:hidden">
+              <Plus className="h-4 w-4" />
+            </div>
           </button>
         </DialogPrimitive.Trigger>
 
@@ -224,7 +239,7 @@ export const ScheduleModal = ({ statuses, teams }) => {
             <WarningModal
               title={"Warning!"}
               description={
-                "If you plan on creating the `Task`, kindly ensure that you have updated the source's & destination's location, and `startTime`, `startDate` & `endTime` fields accordingly before submission. Your attention to this matter is appreciated."
+                "If you plan on modifying the `Task`, kindly ensure that you have updated the source's & destination's location, and `startTime`, `startDate` & `endTime` fields accordingly before submission. Your attention to this matter is appreciated."
               }
             />
           </DialogHeader>
@@ -348,7 +363,7 @@ export const ScheduleModal = ({ statuses, teams }) => {
                                     </SelectTrigger>
                                   </FormControl>
                                   <SelectContent>
-                                    {teams.map((team) => (
+                                    {teamsName.map((team) => (
                                       <SelectItem
                                         key={team.id}
                                         value={team.name}
@@ -362,7 +377,6 @@ export const ScheduleModal = ({ statuses, teams }) => {
                               </FormItem>
                             )}
                           />
-
                           <FormField
                             control={form.control}
                             name="status"

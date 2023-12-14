@@ -7,7 +7,6 @@ import {
   DialogHeader,
   DialogTitle,
   DialogDescription,
-  AlertDialogContent,
 } from "../../ui/dialog";
 import { Button } from "../../ui/button";
 import { cn } from "../../../lib/utils/utils";
@@ -55,7 +54,7 @@ export const WarningModal = ({ title, description }) => {
         </button>
       </DialogPrimitive.Trigger>
 
-      <AlertDialogContent>
+      <DialogContent>
         <DialogHeader className="pt-4 flex flex-row items-center justify-between">
           <div className="flex space-x-2">
             <div className="h-7 w-7 rounded-full border-hidden border-red-800 items-center flex justify-center">
@@ -78,7 +77,7 @@ export const WarningModal = ({ title, description }) => {
             </Button>
           </DialogPrimitive.Close>
         </div>
-      </AlertDialogContent>
+      </DialogContent>
     </DialogPrimitive.Root>
   );
 };
