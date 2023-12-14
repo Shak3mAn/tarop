@@ -2,10 +2,10 @@
 
 import {
     Dialog,
+    DialogContent,
     DialogHeader,
     DialogTitle,
-    DialogDescription,
-    AlertDialogContent
+    DialogDescription
 } from "./dialog";
 import { Button } from "./button";
 
@@ -24,7 +24,7 @@ export const Modal = ({
 
     return (
         <Dialog open={isOpen} onOpenChange={onChange}>
-            <AlertDialogContent>
+            <DialogContent>
                 <DialogHeader>
                     <DialogTitle>{title}</DialogTitle>
                     <DialogDescription>
@@ -34,7 +34,7 @@ export const Modal = ({
                 <div>
                     {children}
                 </div>
-            </AlertDialogContent>
+            </DialogContent>
         </Dialog>
     )
 }
