@@ -24,8 +24,8 @@ export const DateTimePicker = () => {
     const dateStr = startDate.toLocaleDateString();
     const timeStr = startTime.toLocaleTimeString();
 
-    // console.log("Debug - dateStr:", dateStr);
-    // console.log("Debug - timeStr:", timeStr);
+    console.log("Debug - dateStr:", dateStr);
+    console.log("Debug - timeStr:", timeStr);
     // Define regular expressions for the two possible formats
     const format1Regex =
       /^(0[1-9]|[12][0-9]|3[01])(\/|-)(0[1-9]|1[1,2])(\/|-)(19|20)\d{2}$/; // "dd/MM/yyyy"
@@ -60,7 +60,7 @@ export const DateTimePicker = () => {
     const parseFD = parse(formattedDate, desiredDateFormat, new Date());
     const parseFT = parse(formattedTime, desiredTimeFormat, new Date());
 
-    // console.log("Format Date:", formattedDate, formattedTime);
+    console.log("Format Date:", formattedDate, formattedTime);
     const combinedStartTimeDate = set(parseFD, {
       hours: parseFT.getHours(),
       minutes: parseFT.getMinutes(),
@@ -89,9 +89,8 @@ export const DateTimePicker = () => {
     const dateStr = startDate.toLocaleDateString();
     const timeStr = endTime.toLocaleTimeString();
 
-    // console.log("Debug - dateStr:", dateStr);
-    // console.log("Debug - timeStr:", timeStr);
-
+    console.log("Debug - dateStr:", dateStr);
+    console.log("Debug - timeStr:", timeStr);
     // Define regular expressions for the two possible formats
     const format1Regex =
       /^(0[1-9]|[12][0-9]|3[01])(\/|-)(0[1-9]|1[1,2])(\/|-)(19|20)\d{2}$/; // "dd/MM/yyyy"
@@ -126,7 +125,7 @@ export const DateTimePicker = () => {
     const parseFD = parse(formattedDate, desiredDateFormat, new Date());
     const parseFT = parse(formattedTime, desiredTimeFormat, new Date());
 
-    // console.log("Format Date:", formattedDate, formattedTime);
+    console.log("Format Date:", formattedDate, formattedTime);
     const combinedEndTimeDate = set(parseFD, {
       hours: parseFT.getHours(),
       minutes: parseFT.getMinutes(),

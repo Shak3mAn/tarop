@@ -24,13 +24,11 @@ export const DateTimePicker = () => {
     const dateStr = startDate.toLocaleDateString();
     const timeStr = startTime.toLocaleTimeString();
 
-    // console.log("Debug - dateStr:", dateStr);
-    // console.log("Debug - timeStr:", timeStr);
+    console.log("Debug - dateStr:", dateStr);
+    console.log("Debug - timeStr:", timeStr);
     // Define regular expressions for the two possible formats
-    const format1Regex =
-      /^(0[1-9]|[12][0-9]|3[01])(\/|-)(0[1-9]|1[1,2])(\/|-)(19|20)\d{2}$/; // "dd/MM/yyyy"
-    const format2Regex =
-      /^(0[1-9]|1[1,2])(\/|-)(0[1-9]|[12][0-9]|3[01])(\/|-)(19|20)\d{2}$/; // "MM/dd/yyyy"
+    const format1Regex =/^(0[1-9]|[12][0-9]|3[01])(\/|-)(0[1-9]|1[1,2])(\/|-)(19|20)\d{2}$/; // "dd/MM/yyyy"
+    const format2Regex = /^(0[1-9]|1[1,2])(\/|-)(0[1-9]|[12][0-9]|3[01])(\/|-)(19|20)\d{2}$/; // "MM/dd/yyyy"
 
     // Check which format the date string belongs to
     let dateFormat, timeFormat;
@@ -57,13 +55,11 @@ export const DateTimePicker = () => {
     const formattedDate = format(date, desiredDateFormat);
     const formattedTime = format(time, desiredTimeFormat);
 
-    const parseFD = parse(formattedDate, desiredDateFormat, new Date());
-    const parseFT = parse(formattedTime, desiredTimeFormat, new Date());
+    console.log("Format Date:", formattedDate, formattedTime)
 
-    // console.log("Format Date:", formattedDate, formattedTime);
-    const combinedStartTimeDate = set(parseFD, {
-      hours: parseFT.getHours(),
-      minutes: parseFT.getMinutes(),
+    const combinedStartTimeDate = set(formattedDate, {
+      hours: formattedTime.getHours(),
+      minutes: formattedTime.getMinutes(),
     });
 
     console.log("Debug - combinedStartTimeDate:", combinedStartTimeDate);
@@ -71,7 +67,7 @@ export const DateTimePicker = () => {
     console.log("Combined Start Time Date: ", combinedStartTimeDate);
 
     addStartTime({
-      combinedStartTimeDate,
+      combinedStartTimeDate: combinedStartTimeDate,
     });
     addStartDate(startDate);
 
@@ -89,52 +85,49 @@ export const DateTimePicker = () => {
     const dateStr = startDate.toLocaleDateString();
     const timeStr = endTime.toLocaleTimeString();
 
-    // console.log("Debug - dateStr:", dateStr);
-    // console.log("Debug - timeStr:", timeStr);
+    console.log("Debug - dateStr:", dateStr);
+    console.log("Debug - timeStr:", timeStr);
 
-    // Define regular expressions for the two possible formats
-    const format1Regex =
-      /^(0[1-9]|[12][0-9]|3[01])(\/|-)(0[1-9]|1[1,2])(\/|-)(19|20)\d{2}$/; // "dd/MM/yyyy"
-    const format2Regex =
-      /^(0[1-9]|1[1,2])(\/|-)(0[1-9]|[12][0-9]|3[01])(\/|-)(19|20)\d{2}$/; // "MM/dd/yyyy"
+    const dateRegex = /^\d{2}\/\d{2}\/\d{4}$/; // Matches "dd/MM/yyyy" format
+    const timeRegex = /^\d{2}:\d{2}:\d{2} [APMapm]{2}$/; // Matches "hh:mm:ss a" format
 
-    // Check which format the date string belongs to
-    let dateFormat, timeFormat;
+    let combinedEndTimeDate = "";
 
-    if (format1Regex.test(dateStr)) {
-      dateFormat = "dd/MM/yyyy";
-    } else if (format2Regex.test(dateStr)) {
-      dateFormat = "MM/dd/yyyy";
+    if (dateRegex.test(dateStr) && timeRegex.test(timeStr)) {
+      console.log("Date Format 'dd/MM/yyyy'");
+      const originalFormat = "dd/MM/yyyy";
+      const date = parse(dateStr, originalFormat, new Date());
+      const time = parse(timeStr, "HH:mm:ss", new Date()); // Use 24-hour format for time
+
+      // Format the date and time using the new format
+      const newDateFormat = "MM/dd/yyyy";
+      const newTimeFormat = "h:mm:ss a";
+
+      const formattedDate = format(date, newDateFormat);
+      const formattedTime = format(time, newTimeFormat);
+
+      combinedEndTimeDate = set(formattedDate, {
+        hours: formattedTime.getHours(),
+        minutes: formattedTime.getMinutes(),
+      });
     } else {
-      console.error("Invalid date format");
+      console.log("date or time format MM/dd/yyyy");
+
+      const date = parse(dateStr, "MM/dd/yyyy", new Date());
+      const time = parse(timeStr, "h:mm:ss a", new Date());
+
+      console.log("Debug - parsed date:", date);
+      console.log("Debug - parsed time:", time);
+
+      combinedEndTimeDate = set(date, {
+        hours: time.getHours(),
+        minutes: time.getMinutes(),
+      });
     }
-
-    // Assume time is always in "hh:mm:ss a" format
-    timeFormat = "hh:mm:ss a";
-
-    // Parse the date and time using the determined formats
-    const date = parse(dateStr, dateFormat, new Date());
-    const time = parse(timeStr, timeFormat, new Date());
-
-    // Format the date and time using the desired format
-    const desiredDateFormat = "MM/dd/yyyy";
-    const desiredTimeFormat = "h:mm:ss a";
-
-    const formattedDate = format(date, desiredDateFormat);
-    const formattedTime = format(time, desiredTimeFormat);
-
-    const parseFD = parse(formattedDate, desiredDateFormat, new Date());
-    const parseFT = parse(formattedTime, desiredTimeFormat, new Date());
-
-    // console.log("Format Date:", formattedDate, formattedTime);
-    const combinedEndTimeDate = set(parseFD, {
-      hours: parseFT.getHours(),
-      minutes: parseFT.getMinutes(),
-    });
 
     // console.log("Combined End Time Date: ", combinedEndTimeDate);
 
-    addEndTime({ combinedEndTimeDate });
+    addEndTime({ combinedEndTimeDate: combinedEndTimeDate });
 
     addEndTimePicker({
       endTime: combinedEndTimeDate,
