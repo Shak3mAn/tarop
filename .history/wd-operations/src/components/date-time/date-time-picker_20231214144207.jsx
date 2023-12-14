@@ -36,23 +36,19 @@ export const DateTimePicker = () => {
     let dateFormat, timeFormat;
 
     if (format1Regex.test(dateStr)) {
-      console.log("dd/MM format")
       dateFormat = "dd/MM/yyyy";
-      timeFormat = "hh:mm:ss a";
     } else if (format2Regex.test(dateStr)) {
-      console.log("MM/dd format")
       dateFormat = "MM/dd/yyyy";
-      timeFormat = "h:mm:ss a";
     } else {
       console.error("Invalid date format");
     }
 
+    // Assume time is always in "hh:mm:ss a" format
+    timeFormat = "hh:mm:ss a";
+
     // Parse the date and time using the determined formats
     const date = parse(dateStr, dateFormat, new Date());
     const time = parse(timeStr, timeFormat, new Date());
-
-    console.log("The date:", date);
-    console.log("The Time:". time);
 
     // Format the date and time using the desired format
     const desiredDateFormat = "MM/dd/yyyy";
@@ -121,8 +117,6 @@ export const DateTimePicker = () => {
     const date = parse(dateStr, dateFormat, new Date());
     const time = parse(timeStr, timeFormat, new Date());
 
-    console.log("The date:", date);
-    console.log("The Time:". time);
     // Format the date and time using the desired format
     const desiredDateFormat = "MM/dd/yyyy";
     const desiredTimeFormat = "h:mm:ss a";
