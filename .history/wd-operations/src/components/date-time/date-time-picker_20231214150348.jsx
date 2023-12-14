@@ -52,7 +52,7 @@ export const DateTimePicker = () => {
     const time = parse(timeStr, timeFormat, new Date());
 
     console.log("The date:", date);
-    console.log("The Time:", time);
+    console.log("The Time:". time);
 
     // Format the date and time using the desired format
     const desiredDateFormat = "MM/dd/yyyy";
