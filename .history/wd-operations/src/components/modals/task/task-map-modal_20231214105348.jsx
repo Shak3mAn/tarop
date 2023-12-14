@@ -127,14 +127,14 @@ export const TaskMapModal = () => {
   }
   useEffect(() => {
     // console.log("Is start tIME: ", isStartDateTime);
-    console.log("Duration", meta.duration);
+    // console.log("Duration", meta.duration);
     if (
       meta.duration &&
       meta.duration != "duration" &&
       meta.duration != "1 min" &&
       meta.duration != "11 mins"
     ) {
-      console.log("Duration Two", meta.duration);
+      // console.log("Duration Two", meta.duration);
       if (meta.duration.includes("hour")) {
         let min = 0;
         const regex = /\b\d+\s*hours\b/;
