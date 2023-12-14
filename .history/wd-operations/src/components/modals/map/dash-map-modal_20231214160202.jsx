@@ -373,7 +373,7 @@ export const DashMapModal = () => {
                   </div>
                 ) : (
                   <>
-                    <div className="relative overflow-auto h-auto w-full flex flex-col md:col-span-4">
+                    <div className="relative h-auto w-full flex flex-col md:col-span-4">
                       <div className="z-[120] h-[100vh]  p-8 bg-card rounded-lg shadow-md">
                         <DialogHeader className="flex pt-2 flex-row items-center justify-between">
                           <div className="flex justify-start space-x-2">
