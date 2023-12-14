@@ -333,7 +333,7 @@ export const EditTaskOption = ({ initialData }) => {
                         )}
                       />
 
-                      <div className="pt-6 pb-20 space-x-2 flex items-center justify-end w-full">
+                      <div className="pt-6 space-x-2 flex items-center justify-end w-full">
                         <DialogPrimitive.Close asChild>
                           <Button disabled={loading} variant="outline">
                             Cancel
@@ -384,7 +384,7 @@ export const EditTaskOption = ({ initialData }) => {
                         )}
                       />
 
-                      <div className="pt-10 pb-14  space-x-2 flex items-center justify-end w-full">
+                      <div className="pt-10 space-x-2 flex items-center justify-end w-full">
                         <DialogPrimitive.Close asChild>
                           <Button disabled={loading} variant="outline">
                             Cancel

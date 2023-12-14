@@ -1,29 +1,27 @@
 "use client";
 
-import * as z from "zod";
 import { useForm } from "react-hook-form";
 import { useState } from "react";
-import { useRouter} from "next/navigation";
+import { useRouter } from "next/navigation";
 import { cva } from "class-variance-authority";
 import * as DialogPrimitive from "@radix-ui/react-dialog";
-import { Edit, Car } from "lucide-react";
+import { Plus, Users } from "lucide-react";
 import { useUser } from "@clerk/nextjs";
 
-import { useDriverStore } from "../../../store/api/driver-store";
+import { useTeamStore } from "../../../store/api/team-store";
 import { useNotificationStore } from "../../../store/api/notification-store";
 import { useEventStore } from "../../../store/api/event-store";
 import {
   useTeamsMapMeta,
   useDriversMapMeta,
-  useTasksMapMeta,
 } from "../../../store/api/map-meta-store";
 import {
   useDistance,
   useLatLngPicker,
 } from "../../../store/maps/use-location-picker";
 
-import { DriverLocationPicker } from "../../location/map-select/driver-location-picker";
-import { DriverMapModal } from "./driver-map-modal";
+import { TeamLocationPicker } from "../../location/map-select/team-location-picker";
+import { TeamMapModal } from "./team-map-modal";
 import {
   DialogContent,
   DialogHeader,
@@ -59,7 +57,7 @@ const buttonVariants = cva(
         destructive:
           "bg-destructive text-destructive-foreground hover:bg-destructive/90",
         outline:
-          "border border-input border-hidden bg-background hover:bg-accent hover:text-accent-foreground",
+          "border border-input bg-background hover:bg-accent hover:text-accent-foreground",
         secondary:
           "bg-secondary text-secondary-foreground hover:bg-secondary/80",
         ghost: "hover:bg-accent hover:text-accent-foreground",
@@ -69,7 +67,7 @@ const buttonVariants = cva(
         default: "h-10 px-4 py-2",
         sm: "h-9 rounded-md px-3",
         lg: "h-11 rounded-md px-8",
-        icon: "h-7 w-7",
+        icon: "h-10 w-10",
       },
     },
     defaultVariants: {
@@ -79,77 +77,79 @@ const buttonVariants = cva(
   }
 );
 
-export const EditDriverModal = ({
-  initialData,
-  team,
-  vehicle,
-  make,
-  className,
+export const MainCreateTeamModal = ({
+  operationCoordinators,
+  supportCoordinators,
+  drivers,
+  driversInfo,
 }) => {
+  const [isOpen, setIsOpen] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  const { isDriver } = useLatLngPicker();
-  const { isDriverGeoInfo } = useDistance();
+  const { isTeam } = useLatLngPicker();
+  const { isTeamGeoInfo } = useDistance();
 
-  const { updateDriver, driverMapMeta, taskMapMeta, teamMapMeta } =
-    useDriverStore();
+  const { addTeam, teamMapMeta, driverMapMeta } = useTeamStore();
   const { addNotification } = useNotificationStore();
   const { addEvent } = useEventStore();
-  const { updateNewDriverMeta } = useDriversMapMeta();
-  const { updateNewTaskMeta } = useTasksMapMeta();
-  const { updateNewTeamMeta } = useTeamsMapMeta();
   const { user } = useUser();
+  const { addNewTeamMeta, teamsMeta } = useTeamsMapMeta();
+  const { addNewDriverMeta } = useDriversMapMeta();
 
   const router = useRouter();
 
-  const defaultValues = initialData
-    ? { ...initialData }
-    : {
-        driver: "",
-        phoneNo: null,
-        vehicle: "",
-        vehicleMake: "",
-      };
+  const defaultValues = {
+    team: "",
+    teamColor: "",
+    operationCoordinator: "",
+    supportCoordinator: "",
+    driver: "",
+  };
 
   const form = useForm({
     defaultValues,
   });
 
   const onSubmit = async (data) => {
-    const notificationData = {
-      instigator: user?.fullName ? user.fullName : "Coordinator",
-      title: "Driver",
-      action: "Updated",
-      description: `Driver: ${data.driver} has been updated`,
-      team: data.team,
-    };
 
-    const updateData = {
+    const driverLocation = driversInfo.filter(
+      (driver) => driver.driver === data.driver
+    );
+
+    const newData = {
       ...data,
+      driverId: driverLocation[0].driverId,
       cachedLocation: {
-        lat: isDriver?.lat,
-        lng: isDriver?.lng,
-        address: !isDriver?.label ? isDriverGeoInfo?.address : isDriver?.label,
+        lat: isTeam.lat,
+        lng: isTeam.lng,
+        address: !isTeam?.label ? isTeamGeoInfo?.address : isTeam?.label,
       },
       setLocation: {
-        lat: isDriver?.lat,
-        lng: isDriver?.lng,
-        address: !isDriver?.label ? isDriverGeoInfo?.address : isDriver?.label,
+        lat: isTeam.lat,
+        lng: isTeam.lng,
+        address: !isTeam?.label ? isTeamGeoInfo?.address : isTeam?.label,
       },
+    };
+
+    const notificationData = {
+      instigator: user?.fullName ? user.fullName : "User",
+      title: "Team",
+      action: "Created",
+      description: `Team: ${data.team} has been created`,
+      team: data.team,
     };
 
     try {
       setLoading(true);
-      updateDriver(data.id, updateData);
+      addTeam(newData, driverLocation[0]);
       addNotification(notificationData);
       addEvent(notificationData);
-      updateNewDriverMeta(driverMapMeta);
-      updateNewTeamMeta(teamMapMeta);
-      updateNewTaskMeta(taskMapMeta);
+      addNewTeamMeta(teamMapMeta);
+      addNewDriverMeta(driverMapMeta);
       form.reset();
       router.refresh();
     } catch (error) {
-      console.error("Error updating driver:", error);
+      console.error("Error creating team", error);
     } finally {
       setLoading(false);
     }
@@ -160,14 +160,15 @@ export const EditDriverModal = ({
         <DialogPrimitive.Trigger asChild>
           <button
             className={cn(
-              buttonVariants({
-                variant: "outline",
-                size: "icon",
-                className: className,
-              })
+              buttonVariants({ variant: "default", size: "default" })
             )}
           >
-            <Edit className="h-4 w-4" />
+            <div className="hidden md:flex">
+              <Plus className="h-4 w-4 mr-2" /> Add New
+            </div>
+            <div className="flex md:hidden">
+              <Plus className="h-4 w-4" />
+            </div>
           </button>
         </DialogPrimitive.Trigger>
 
@@ -175,22 +176,22 @@ export const EditDriverModal = ({
           <DialogHeader className="pt-4 flex flex-row items-center justify-between">
             <div className="flex space-x-2">
               <div className="h-7 w-7 rounded-full border items-center flex justify-center">
-                <Car className="h-4 w-4" />
+                <Users className="h-4 w-4" />
               </div>
               <div className="flex flex-col">
-                <DialogTitle>Driver</DialogTitle>
-                <DialogDescription>Edit existing driver</DialogDescription>
+                <DialogTitle>Team</DialogTitle>
+                <DialogDescription>Add new team</DialogDescription>
               </div>
             </div>
 
             <div className="flex items-center justify-center space-x-2">
-              <DriverMapModal />
+              <TeamMapModal />
               <WarningModal
-              title={"Warning!"}
-              description={
-                "If you plan on modifying the `Driver`, kindly ensure that you have updated the drivers location fields accordingly before submission. Your attention to this matter is appreciated."
-              }
-            />
+                title={"Warning!"}
+                description={
+                  "If you plan on modifying the `Team`, kindly ensure that you have updated the teams location fields accordingly before submission. Your attention to this matter is appreciated."
+                }
+              />
             </div>
           </DialogHeader>
 
@@ -201,14 +202,14 @@ export const EditDriverModal = ({
                   <form onSubmit={form.handleSubmit(onSubmit)}>
                     <FormField
                       control={form.control}
-                      name="driver"
+                      name="team"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Driver</FormLabel>
+                          <FormLabel>Team</FormLabel>
                           <FormControl>
                             <Input
                               disabled={loading}
-                              placeholder="Name"
+                              placeholder="Team"
                               {...field}
                             />
                           </FormControl>
@@ -218,14 +219,15 @@ export const EditDriverModal = ({
                     />
                     <FormField
                       control={form.control}
-                      name="phoneNo"
+                      name="teamColor"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Phone No.</FormLabel>
+                          <FormLabel>Team Color</FormLabel>
                           <FormControl>
                             <Input
+                              type={"color"}
                               disabled={loading}
-                              placeholder="Phone No"
+                              placeholder="Team Color"
                               {...field}
                             />
                           </FormControl>
@@ -235,10 +237,10 @@ export const EditDriverModal = ({
                     />
                     <FormField
                       control={form.control}
-                      name="vehicle"
+                      name="operationCoordinator"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Car Reg.</FormLabel>
+                          <FormLabel>Operation Coordinator</FormLabel>
                           <Select
                             disabled={loading}
                             onValueChange={field.onChange}
@@ -249,12 +251,12 @@ export const EditDriverModal = ({
                               <SelectTrigger>
                                 <SelectValue
                                   defaultValue={field.value}
-                                  placeholder="Select Registration"
+                                  placeholder="Select Coordinator"
                                 />
                               </SelectTrigger>
                             </FormControl>
                             <SelectContent>
-                              {vehicle.map((coord) => (
+                              {operationCoordinators.map((coord) => (
                                 <SelectItem key={coord.id} value={coord.name}>
                                   {coord.name}
                                 </SelectItem>
@@ -267,10 +269,10 @@ export const EditDriverModal = ({
                     />
                     <FormField
                       control={form.control}
-                      name="vehicleMake"
+                      name="supportCoordinator"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Make</FormLabel>
+                          <FormLabel>Supporting Coordinator</FormLabel>
                           <Select
                             disabled={loading}
                             onValueChange={field.onChange}
@@ -281,14 +283,49 @@ export const EditDriverModal = ({
                               <SelectTrigger>
                                 <SelectValue
                                   defaultValue={field.value}
-                                  placeholder="Select Make"
+                                  placeholder="Select Coordinator"
                                 />
                               </SelectTrigger>
                             </FormControl>
                             <SelectContent>
-                              {make.map((coord) => (
-                                <SelectItem key={coord.id} value={coord.name}>
-                                  {coord.name}
+                              {supportCoordinators.map((support) => (
+                                <SelectItem
+                                  key={support.id}
+                                  value={support.name}
+                                >
+                                  {support.name}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="driver"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Driver</FormLabel>
+                          <Select
+                            disabled={loading}
+                            onValueChange={field.onChange}
+                            value={field.value}
+                            defaultValue={field.value}
+                          >
+                            <FormControl>
+                              <SelectTrigger>
+                                <SelectValue
+                                  defaultValue={field.value}
+                                  placeholder="Select Driver"
+                                />
+                              </SelectTrigger>
+                            </FormControl>
+                            <SelectContent>
+                              {drivers.map((driver) => (
+                                <SelectItem key={driver.id} value={driver.name}>
+                                  {driver.name}
                                 </SelectItem>
                               ))}
                             </SelectContent>
@@ -304,20 +341,23 @@ export const EditDriverModal = ({
                         <FormItem className="pt-3">
                           <FormLabel>Location</FormLabel>
                           <FormControl>
-                            <DriverLocationPicker {...field} />
+                            <TeamLocationPicker {...field} />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
                       )}
                     />
 
-                    <div className="pt-10 pb-14 space-x-2 flex items-center justify-end w-full">
+                    <div className="pt-10 space-x-2 flex items-center justify-end w-full">
                       <DialogPrimitive.Close asChild>
-                        <Button disabled={loading} variant="outline">
+                        <Button
+                          disabled={loading}
+                          type="cancel"
+                          variant={"outline"}
+                        >
                           Cancel
                         </Button>
                       </DialogPrimitive.Close>
-
                       <Button disabled={loading} type="submit">
                         Continue
                       </Button>

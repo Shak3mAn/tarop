@@ -358,16 +358,8 @@ export const TeamMapModal = () => {
                                     <div className="h-[450px]"></div>
                                   )}
 
-                                  <div className="pt-4 -mt-2 space-x-2 absolute right-6 bottom-20 flex items-end justify-end w-full ">
-                                    <DialogPrimitive.Close asChild>
-                                      <Button
-                                        disabled={loading}
-                                        variant="outline"
-                                      >
-                                        Cancel
-                                      </Button>
-                                    </DialogPrimitive.Close>
-
+                                  <div className="pt-4 -mt-2 space-x-2 right-6 bottom-24 flex items-end justify-end w-full ">
+                                    
                                     <DialogPrimitive.Close asChild>
                                       <Button disabled={loading} type="submit">
                                         Continue

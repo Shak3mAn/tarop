@@ -3,20 +3,16 @@
 import * as z from "zod";
 import { useForm } from "react-hook-form";
 import { useState } from "react";
-import { useRouter} from "next/navigation";
+import { useRouter } from "next/navigation";
 import { cva } from "class-variance-authority";
 import * as DialogPrimitive from "@radix-ui/react-dialog";
-import { Edit, Car } from "lucide-react";
+import { Plus, Car } from "lucide-react";
 import { useUser } from "@clerk/nextjs";
 
 import { useDriverStore } from "../../../store/api/driver-store";
 import { useNotificationStore } from "../../../store/api/notification-store";
 import { useEventStore } from "../../../store/api/event-store";
-import {
-  useTeamsMapMeta,
-  useDriversMapMeta,
-  useTasksMapMeta,
-} from "../../../store/api/map-meta-store";
+import { useDriversMapMeta } from "../../../store/api/map-meta-store";
 import {
   useDistance,
   useLatLngPicker,
@@ -24,6 +20,7 @@ import {
 
 import { DriverLocationPicker } from "../../location/map-select/driver-location-picker";
 import { DriverMapModal } from "./driver-map-modal";
+
 import {
   DialogContent,
   DialogHeader,
@@ -47,8 +44,8 @@ import {
   SelectValue,
 } from "../../ui/select";
 import { Button } from "../../ui/button";
-import { WarningModal } from "../alert/warning-modal";
 import { cn } from "../../../lib/utils/utils";
+import { WarningModal } from "../alert/warning-modal";
 
 const buttonVariants = cva(
   "inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50",
@@ -59,7 +56,7 @@ const buttonVariants = cva(
         destructive:
           "bg-destructive text-destructive-foreground hover:bg-destructive/90",
         outline:
-          "border border-input border-hidden bg-background hover:bg-accent hover:text-accent-foreground",
+          "border border-input bg-background hover:bg-accent hover:text-accent-foreground",
         secondary:
           "bg-secondary text-secondary-foreground hover:bg-secondary/80",
         ghost: "hover:bg-accent hover:text-accent-foreground",
@@ -69,7 +66,7 @@ const buttonVariants = cva(
         default: "h-10 px-4 py-2",
         sm: "h-9 rounded-md px-3",
         lg: "h-11 rounded-md px-8",
-        icon: "h-7 w-7",
+        icon: "h-10 w-10",
       },
     },
     defaultVariants: {
@@ -79,77 +76,66 @@ const buttonVariants = cva(
   }
 );
 
-export const EditDriverModal = ({
-  initialData,
-  team,
-  vehicle,
-  make,
-  className,
-}) => {
+export const MainCreateDriverModal = ({ vehicle, make, statuses }) => {
+  const [isOpen, setIsOpen] = useState(false);
   const [loading, setLoading] = useState(false);
 
   const { isDriver } = useLatLngPicker();
   const { isDriverGeoInfo } = useDistance();
 
-  const { updateDriver, driverMapMeta, taskMapMeta, teamMapMeta } =
-    useDriverStore();
+  const { addDriver, driverMapMeta } = useDriverStore();
   const { addNotification } = useNotificationStore();
   const { addEvent } = useEventStore();
-  const { updateNewDriverMeta } = useDriversMapMeta();
-  const { updateNewTaskMeta } = useTasksMapMeta();
-  const { updateNewTeamMeta } = useTeamsMapMeta();
   const { user } = useUser();
+  const { addNewDriverMeta } = useDriversMapMeta();
 
   const router = useRouter();
 
-  const defaultValues = initialData
-    ? { ...initialData }
-    : {
-        driver: "",
-        phoneNo: null,
-        vehicle: "",
-        vehicleMake: "",
-      };
+  const defaultValues = {
+    driver: "",
+    phoneNo: null,
+    vehicle: "",
+    vehicleMake: "",
+    email: ""
+  };
 
   const form = useForm({
     defaultValues,
   });
 
   const onSubmit = async (data) => {
-    const notificationData = {
-      instigator: user?.fullName ? user.fullName : "Coordinator",
-      title: "Driver",
-      action: "Updated",
-      description: `Driver: ${data.driver} has been updated`,
-      team: data.team,
-    };
-
     const updateData = {
       ...data,
       cachedLocation: {
-        lat: isDriver?.lat,
-        lng: isDriver?.lng,
+        lat: isDriver.lat,
+        lng: isDriver.lng,
         address: !isDriver?.label ? isDriverGeoInfo?.address : isDriver?.label,
       },
       setLocation: {
-        lat: isDriver?.lat,
-        lng: isDriver?.lng,
+        lat: isDriver.lat,
+        lng: isDriver.lng,
         address: !isDriver?.label ? isDriverGeoInfo?.address : isDriver?.label,
       },
+    };
+
+    const notificationData = {
+      instigator: user?.fullName ? user.fullName : "User",
+      title: "Driver",
+      action: "Created",
+      description: `Driver: ${data.driver} has been created`,
+      team: data.team,
     };
 
     try {
       setLoading(true);
-      updateDriver(data.id, updateData);
+      addDriver(updateData);
       addNotification(notificationData);
       addEvent(notificationData);
-      updateNewDriverMeta(driverMapMeta);
-      updateNewTeamMeta(teamMapMeta);
-      updateNewTaskMeta(taskMapMeta);
+      addNewDriverMeta(driverMapMeta);
       form.reset();
       router.refresh();
     } catch (error) {
-      console.error("Error updating driver:", error);
+      console.error("Error creating driver:", error);
     } finally {
       setLoading(false);
     }
@@ -160,14 +146,15 @@ export const EditDriverModal = ({
         <DialogPrimitive.Trigger asChild>
           <button
             className={cn(
-              buttonVariants({
-                variant: "outline",
-                size: "icon",
-                className: className,
-              })
+              buttonVariants({ variant: "default", size: "default" })
             )}
           >
-            <Edit className="h-4 w-4" />
+            <div className="hidden md:flex">
+              <Plus className="h-4 w-4 mr-2" /> Add New
+            </div>
+            <div className="flex md:hidden">
+              <Plus className="h-4 w-4" />
+            </div>
           </button>
         </DialogPrimitive.Trigger>
 
@@ -179,18 +166,18 @@ export const EditDriverModal = ({
               </div>
               <div className="flex flex-col">
                 <DialogTitle>Driver</DialogTitle>
-                <DialogDescription>Edit existing driver</DialogDescription>
+                <DialogDescription>Add a new driver</DialogDescription>
               </div>
             </div>
 
             <div className="flex items-center justify-center space-x-2">
               <DriverMapModal />
               <WarningModal
-              title={"Warning!"}
-              description={
-                "If you plan on modifying the `Driver`, kindly ensure that you have updated the drivers location fields accordingly before submission. Your attention to this matter is appreciated."
-              }
-            />
+                title={"Warning!"}
+                description={
+                  "If you plan on modifying the `Driver`, kindly ensure that you have updated the drivers location fields accordingly before submission. Your attention to this matter is appreciated."
+                }
+              />
             </div>
           </DialogHeader>
 
@@ -229,6 +216,21 @@ export const EditDriverModal = ({
                               {...field}
                             />
                           </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                     <FormField
+                      control={form.control}
+                      name="email"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Email</FormLabel>
+                          <Input
+                              disabled={loading}
+                              placeholder="Email"
+                              {...field}
+                            />
                           <FormMessage />
                         </FormItem>
                       )}
@@ -311,7 +313,7 @@ export const EditDriverModal = ({
                       )}
                     />
 
-                    <div className="pt-10 pb-14 space-x-2 flex items-center justify-end w-full">
+                    <div className="pt-10 space-x-2 flex items-center justify-end w-full">
                       <DialogPrimitive.Close asChild>
                         <Button disabled={loading} variant="outline">
                           Cancel
