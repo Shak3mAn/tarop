@@ -89,8 +89,8 @@ export const DateTimePicker = () => {
     const dateStr = startDate.toLocaleDateString();
     const timeStr = endTime.toLocaleTimeString();
 
-    console.log("Debug - dateStr:", dateStr);
-    console.log("Debug - timeStr:", timeStr);
+    // console.log("Debug - dateStr:", dateStr);
+    // console.log("Debug - timeStr:", timeStr);
 
     // Define regular expressions for the two possible formats
     const format1Regex =
