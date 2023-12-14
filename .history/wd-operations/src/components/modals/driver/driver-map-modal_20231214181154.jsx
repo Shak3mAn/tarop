@@ -11,8 +11,8 @@ import * as DialogPrimitive from "@radix-ui/react-dialog";
 import { addHours, addMinutes, format } from "date-fns";
 import { useMediaQuery } from "react-responsive";
 
-import { MapView } from "../../maps/modals/team-map";
-import { TeamLocationPicker } from "../../location/map-select/team-location-picker";
+import { MapView } from "../../maps/modals/driver-map";
+import { DriverLocationPicker } from "../../location/map-select/driver-location-picker";
 
 import {
   useDistance,
@@ -70,7 +70,7 @@ const buttonVariants = cva(
   }
 );
 
-export const TeamMapModal = () => {
+export const DriverMapModal = () => {
   let isTabletMid = useMediaQuery({ query: "(max-width: 768px)" });
 
   const [loading, setLoading] = useState(false);
@@ -83,8 +83,8 @@ export const TeamMapModal = () => {
   });
 
   const mobileMapToggle = useMobileMapToggle();
-  const { isTeamGeoInfo } = useDistance();
-  const { isTeam } = useLatLngPicker();
+  const { isDriverGeoInfo } = useDistance();
+  const { isDriver } = useLatLngPicker();
 
   const defaultValues = {
     locationPicker: "",
@@ -95,20 +95,21 @@ export const TeamMapModal = () => {
   });
 
   const onSubmit = () => {
+    console.log("onSubmit");
   };
 
   useEffect(() => {
-    if (isTeam !== null || isTeamGeoInfo !== null) {
+    if (isDriver !== null || isDriverGeoInfo !== null) {
       setMeta({
         ...meta,
-        label: isTeam?.label,
-        address: isTeamGeoInfo?.address,
-        city: isTeamGeoInfo?.city,
-        state: isTeamGeoInfo?.state,
-        country: isTeamGeoInfo?.country,
+        label: isDriver?.label,
+        address: isDriverGeoInfo?.address,
+        city: isDriverGeoInfo?.city,
+        state: isDriverGeoInfo?.state,
+        country: isDriverGeoInfo?.country,
       });
     }
-  }, [isTeamGeoInfo, isTeam]);
+  }, [isDriverGeoInfo, isDriver]);
 
   return (
     <>
@@ -140,7 +141,7 @@ export const TeamMapModal = () => {
                         <DialogDescription>Select Map</DialogDescription>
                       </div>
                     </div>
-                    {/* <div className="flex items-center justify-center">
+                    <div className="flex items-center justify-center">
                       <button
                         onClick={mobileMapToggle.onToggle}
                         className={cn(
@@ -152,7 +153,7 @@ export const TeamMapModal = () => {
                       >
                         <Smartphone className="h-5 w-5" />
                       </button>
-                    </div> */}
+                    </div>
                   </DialogHeader>
                   <div className="">
                     <div className="space-y-4 py-1 pb-4">
@@ -168,7 +169,7 @@ export const TeamMapModal = () => {
                                     Location
                                   </FormLabel>
                                   <FormControl>
-                                    <TeamLocationPicker {...field} />
+                                    <DriverLocationPicker {...field} />
                                   </FormControl>
                                   <FormMessage />
                                 </FormItem>
@@ -256,8 +257,8 @@ export const TeamMapModal = () => {
                   </div>
                 ) : (
                   <>
-                    <div className="relative w-full  flex flex-col md:col-span-4">
-                      <div className="z-[120] h-[100vh] p-8 bg-card rounded-lg shadow-md">
+                    <div className="relative w-full flex flex-col md:col-span-4">
+                      <div className="z-[120] h-screen p-8 bg-card rounded-lg shadow-md">
                         <DialogHeader className="flex pt-2 flex-row items-center justify-between">
                           <div className="flex space-x-2">
                             <div className="h-7 w-7 rounded-full border items-center flex justify-center">
@@ -296,7 +297,7 @@ export const TeamMapModal = () => {
                                           Location
                                         </FormLabel>
                                         <FormControl>
-                                          <TeamLocationPicker {...field} />
+                                          <DriverLocationPicker {...field} />
                                         </FormControl>
                                         <FormMessage />
                                       </FormItem>
@@ -358,7 +359,7 @@ export const TeamMapModal = () => {
                                     <div className="h-[450px]"></div>
                                   )}
 
-                                  <div className="pt-4  sm:pb-0 -mt-2 space-x-2 absolute right-6 bottom-20 flex items-end justify-end w-full ">
+                                  <div className="pt-4 absolute space-x-2 flex items-end justify-end w-full bottom-24 right-6">
                                     <DialogPrimitive.Close asChild>
                                       <Button
                                         disabled={loading}
