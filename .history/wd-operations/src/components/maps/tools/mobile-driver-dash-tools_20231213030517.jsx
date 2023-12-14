@@ -1,12 +1,11 @@
 "use client";
 
-import { Navigation, Route } from "lucide-react";
+import { Route, Smartphone, Navigation } from "lucide-react";
 import { cva } from "class-variance-authority";
 
 import { useDashMapModalTools } from "../../../store/maps/use-meta-maps";
+import { useMobileMapToggle } from "../../../store/maps/use-location-picker";
 import { useDriverMode } from "../../../store/use-general";
-
-import { DriverDashMapModal } from "../../modals/map/driver-map-modal";
 
 import { cn } from "../../../lib/utils/utils";
 
@@ -39,15 +38,16 @@ const buttonVariants = cva(
   }
 );
 
-export const DriverDashTools = () => {
+export const DriverDashMobileTools = () => {
   const routeToggle = useDashMapModalTools();
   const { onToggleNavigate } = useDriverMode();
 
+  const mobileMapToggle = useMobileMapToggle();
   return (
     <div className="flex absolute z-[50] flex-col bg-transparent space-y-1.5 transition-all ease-in-out duration-300">
       <div
         className={cn(
-          "bg-card p-1 rounded-xl shadow-md items-center space-x-3 w-[119px] justify-start flex transition-all duration-150 ease-in-out hover:scale-110 hover:ml-2 hover:mt-1 opacity-70 hover:opacity-95"
+          "bg-card p-1 rounded-xl shadow-md items-center space-x-3 w-[119px] justify-start flex transition-all duration-150 ease-in-out hover:scale-110 hover:ml-2 hover:mt-1"
         )}
       >
         <div className="flex items-center justify-center">
@@ -67,6 +67,21 @@ export const DriverDashTools = () => {
         </div>
         <div className="flex items-center justify-center">
           <button
+            className={cn(
+              buttonVariants({
+                variant: "outline",
+                size: "icon",
+                className:
+                  "transition-all ease-in-out duration-200 hover:scale-110 active:scale-90",
+              })
+            )}
+            onClick={mobileMapToggle.onToggle}
+          >
+            <Smartphone className="h-5 w-5" />
+          </button>
+        </div>
+        <div className="flex items-center justify-center">
+          <button
             onClick={() => onToggleNavigate()}
             className={cn(
               buttonVariants({
@@ -79,9 +94,6 @@ export const DriverDashTools = () => {
           >
             <Navigation className="h-4 w-4" />
           </button>
-        </div>
-        <div className="flex items-center justify-center">
-          <DriverDashMapModal className="transition-all ease-in-out duration-200 hover:scale-110 active:scale-90"  />
         </div>
       </div>
     </div>

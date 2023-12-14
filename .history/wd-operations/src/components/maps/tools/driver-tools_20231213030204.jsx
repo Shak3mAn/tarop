@@ -47,7 +47,7 @@ export const DriverDashTools = () => {
     <div className="flex absolute z-[50] flex-col bg-transparent space-y-1.5 transition-all ease-in-out duration-300">
       <div
         className={cn(
-          "bg-card p-1 rounded-xl shadow-md items-center space-x-3 w-[119px] justify-start flex transition-all duration-150 ease-in-out hover:scale-110 hover:ml-2 hover:mt-1 opacity-70 hover:opacity-95"
+          "bg-card p-1 rounded-xl shadow-md items-center space-x-3 w-[119px] justify-start flex transition-all duration-150 ease-in-out hover:scale-110 hover:ml-2 hover:mt-1"
         )}
       >
         <div className="flex items-center justify-center">
