@@ -3,43 +3,28 @@
 import Image from "next/image";
 import { useForm } from "react-hook-form";
 import { toast } from "react-hot-toast";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { cva } from "class-variance-authority";
 import * as DialogPrimitive from "@radix-ui/react-dialog";
 import { useUser } from "@clerk/nextjs";
-import { DoorOpen, FileUp, Users } from "lucide-react";
+import { PartyPopper } from "lucide-react";
+import useWindowSize from "react-use/lib/useWindowSize";
+import Confetti from "react-confetti";
 
-import PleaseWait from "../../../../public/general/please-wait.jpg";
+import WelcomeImg from "../../../../public/general/welcome-image.jpg";
 
 import { useWelcomeModal } from "../../../store/use-general";
 import { useUserStore } from "../../../store/api/user-store";
+import { useTempUserStore } from "../../../store/api/temp-user-store";
 
 import {
-  NoCloseDialogContent,
+  WelcomeDialogContent,
   DialogHeader,
   DialogTitle,
   DialogDescription,
 } from "../../ui/landing/dialog";
-import { Input } from "../../ui/input";
-import {
-  Form,
-  FormControl,
-  FormDescription,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "../../ui/form";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "../../ui/select";
 import { Button } from "../../ui/button";
 import { cn } from "../../../lib/utils/utils";
-import { role } from "../../../lib/utils/data";
 
 const buttonVariants = cva(
   "inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50",
@@ -70,25 +55,73 @@ const buttonVariants = cva(
   }
 );
 
-export const WaitingApprovalModal = () => {
-  const [loading, setLoading] = useState(false);
+export const CongratulationsApprovalModal = () => {
   const { user } = useUser();
-  const { onUserSubmit } = useWelcomeModal();
-  const { addUser } = useUserStore();
+  const { onCongratulationOpened } = useWelcomeModal();
+  const { height } = useWindowSize();
+  const { fetchUser, person, updateUserCongratulation } = useUserStore();
+  const { fetchTempUser, tempUser, deleteTempUser } = useTempUserStore();
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      const fetchUsrsTempUsrs = async () => {
+        await fetchUser({ email: user.primaryEmailAddress.emailAddress });
+        onCongratulationOpened();
+    
+        await fetchTempUser({ email: user.primaryEmailAddress.emailAddress });
+    
+      }
+
+      fetchUsrsTempUsrs();
+
+    deleteTempUser(tempUser?._id);
+    }, 2200)
+
+    return () => clearTimeout(timer);
+  }, []);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      onCongrats();
+    }, 300);
+    return () => clearTimeout(timer);
+  }, []);
+
+  const onCongrats = async () => {
+    const userData = {
+      isCongratulationOpened: true,
+    };
+
+    try {
+      updateUserCongratulation(person._id, userData);
+    } catch (error) {
+      console.error("Error updating congratulation:", error);
+    }
+  };
 
   return (
     <>
       <DialogPrimitive.Root defaultOpen>
         <DialogPrimitive.Trigger asChild>
-          <Button disabled={loading}>Continue</Button>
+          <button
+            className={cn(buttonVariants({ variant: "outline", size: "icon" }))}
+          >
+            <PartyPopper className="absolute h-4 w-4 transition-all" />
+          </button>
         </DialogPrimitive.Trigger>
 
-        <NoCloseDialogContent>
+        <WelcomeDialogContent>
+          <Confetti
+            width={1200}
+            height={"auto"}
+            gravity={0.075}
+            tweenDuration={5000}
+          />
           <div className="flex md:grid md:grid-cols-10">
             <div className="hidden md:flex md:col-span-6">
               <Image
-                alt="Please Wait"
-                src={PleaseWait}
+                alt="WelcomeImg"
+                src={WelcomeImg}
                 className="rounded-tl-lg object-cover h-[660px] rounded-bl-lg overflow-hidden"
               />
             </div>
@@ -97,14 +130,14 @@ export const WaitingApprovalModal = () => {
               <DialogHeader className="pt-4 flex flex-row items-center justify-start">
                 <div className="flex space-x-2">
                   <div className="h-15 w-15 mr-2 rounded-lg border-hidden items-center flex justify-center">
-                    <FileUp className="h-10 w-10" />
+                    <PartyPopper className="h-10 w-10" />
                   </div>
                   <div className="flex flex-col">
                     <DialogTitle className="text-3xl font-extrabold">
-                      Submission
+                      Congratulations!!
                     </DialogTitle>
                     <DialogDescription className="">
-                      Waiting for<span className="font-semibold">Approval</span>
+                      Approval <span className="font-semibold">Successful</span>
                     </DialogDescription>
                   </div>
                 </div>
@@ -121,33 +154,37 @@ export const WaitingApprovalModal = () => {
                       ,
                       <br />
                       <br />
-                      Your request for access has been received and is currently
-                      under thoughtful consideration by our diligent team. We deeply appreciate your patience as we
-                      meticulously review the details provided.
-                      <br />
-                      <br />
-                      In the meantime, if you have any further inquiries or if
-                      there is anything else we can assist you with, please do
-                      not hesitate to reach out. We understand the importance of
-                      your request, and we assure you that we are working
-                      diligently to provide you with a prompt response.
-                      <br />
-                      <br />
-                      Thank you for choosing{" "}
+                      Heartfelt congratulations! We are delighted to inform you
+                      that your approval submission has been successful, and you
+                      are now officially welcomed into the{" "}
                       <span className="font-semibold text-[#0f172a]">
-                        {" "}
+                        Tarop
+                      </span>{" "}
+                      community.
+                      <br />
+                      <br />
+                      Your presence enriches our community, and we are thrilled
+                      to have you on board. As you step into this dynamic realm
+                      of operations, rest assured that our platform is designed
+                      to empower your operations and enhance your experience.
+                      <br />
+                      <br />
+                      Feel free to navigate through the comprehensive features
+                      of our CRM system, tailored to meet the intricate demands
+                      of the Operations & Logistics industry. Should you have
+                      any inquiries or require guidance, our support team is
+                      readily available to assist you
+                      <br />
+                      <br />
+                      Welcome aboard!
+                      <br />
+                      <br />
+                      Best Regards,
+                      <br />
+                      <br />
+                      <span className="font-semibold text-[#0f172a]">
                         Tarop
                       </span>
-                      . We value your presence, and we look forward to welcoming
-                      you as an approved member of our community.
-                      <br />
-                      <br />
-                      Warm regards,
-                      <br />
-                      <br />
-                      <span className="font-semibold text-[#0f172a]">
-                        Tarop
-                      </span> 
                       <br />
                       <br />
                     </DialogDescription>
@@ -156,7 +193,7 @@ export const WaitingApprovalModal = () => {
               </div>
             </div>
           </div>
-        </NoCloseDialogContent>
+        </WelcomeDialogContent>
       </DialogPrimitive.Root>
     </>
   );

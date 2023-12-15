@@ -131,6 +131,9 @@ const Navbar = ({ isSidebarOpen, setIsSidebarOpen }) => {
             <Separator orientation="vertical" />
           </div>
 
+          <CongratulationsApprovalModal />
+
+{!isTabletMid && (
           <div className="hidden md:flex space-x-4">
             {!isCongrats ? (
               <>
@@ -151,6 +154,8 @@ const Navbar = ({ isSidebarOpen, setIsSidebarOpen }) => {
               <></>
             )}
           </div>
+)
+}
           {person?.role === "Admin" && (
             <>
               <Approvals />

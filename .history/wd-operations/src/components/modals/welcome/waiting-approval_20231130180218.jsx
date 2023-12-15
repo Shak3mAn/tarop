@@ -110,7 +110,7 @@ export const WaitingApprovalModal = () => {
                 </div>
               </DialogHeader>
               <div>
-                <div className="space-y-4 py-1 pt-4 pb-20 md:pb-4">
+                <div className="space-y-4 py-1 pt-4 pb-4">
                   <div className="space-y-4">
                     <DialogDescription>
                       <br />

@@ -9,7 +9,6 @@ import * as DialogPrimitive from "@radix-ui/react-dialog";
 import { useUser } from "@clerk/nextjs";
 import { DoorOpen, Users } from "lucide-react";
 import { useRouter } from "next/navigation"
-import { useMediaQuery } from "react-responsive";
 
 import ComeIn from "../../../../public/general/come-in.jpg";
 
@@ -27,7 +26,6 @@ import {
   DialogTitle,
   DialogDescription,
 } from "../../ui/landing/dialog";
-import { DialogContent } from "../../ui/maps/dialog";
 import { Input } from "../../ui/input";
 import {
   Form,
@@ -79,8 +77,6 @@ const buttonVariants = cva(
 );
 
 export const UserSubmissionModal = () => {
-  let isTabletMid = useMediaQuery({ query: "(max-width: 768px)" });
-
   const [loading, setLoading] = useState(false);
   const { user } = useUser();
   const { isUserSubmit, onUserSubmit } = useWelcomeModal();
@@ -162,6 +158,7 @@ export const UserSubmissionModal = () => {
             <Users className="absolute h-4 w-4 transition-all" />
           </button>
         </DialogPrimitive.Trigger>
+
         <NoCloseDialogContent>
           <div className="flex md:grid md:grid-cols-10">
             <div className="hidden md:flex md:col-span-6">
@@ -315,7 +312,7 @@ export const UserSubmissionModal = () => {
                           )}
                         />
 
-                        <div className="pt-8 pb-20  sm:pb-0  md:pt-10 space-x-2 flex items-center justify-end w-full">
+                        <div className="pt-10 space-x-2 flex items-center justify-end w-full">
                           {!isUserSubmit ? (
                             <Button disabled={loading} type="submit">
                               Submit
