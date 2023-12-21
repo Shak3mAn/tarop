@@ -118,7 +118,7 @@ export const TeamItem = ({ team }) => {
         distanceMatrixTask();
         directionRouteTask();
       }
-    }, 30000);
+    }, 15000);
 
     return () => clearInterval(intervalId);
   }, []);
